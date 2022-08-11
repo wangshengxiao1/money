@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="http://localhost:9007/007-money-alipay/loan/page/aliPay" method="post">
+    <input name="out_trade_no" th:value="${rechargeRecord.rechargeNo}" type="hidden"/>
+    <input name="total_amount" th:value="${rechargeRecord.rechargeMoney}" type="hidden"/>
+    <input name="subject" th:value="${rechargeRecord.rechargeDesc}" type="hidden"/>
+    <input name="body" th:value="${rechargeRecord.rechargeDesc}" type="hidden"/>
+</form>
+<script>
+    document.forms[0].submit();
+</script>
+</body>
+</html>
