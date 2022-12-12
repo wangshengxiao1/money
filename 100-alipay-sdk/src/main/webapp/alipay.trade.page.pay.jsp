@@ -43,8 +43,6 @@
 	
 	//请求
 	String result = alipayClient.pageExecute(alipayRequest).getBody();
-
-	//String result = session.getAttribute("result");
 	
 	//输出
 	out.println(result);

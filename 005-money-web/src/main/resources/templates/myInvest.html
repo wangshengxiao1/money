@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -68,71 +68,37 @@
                                 <span class="deal-type" style="width:120px">投资状态</span>
                                 <span class="deal-money">投资金额(元)</span>
                             </dt>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
+                            <dd th:each="bidInfo:${bidInfoList}">
+                                <div class="deal-time" th:text="${#dates.format(bidInfo.bidTime,'yyyy-MM-dd hh:mm:ss')}">2016-01-03 12:23:32</div>
+                                <div class="deal-name" th:text="${bidInfo.loanInfo.productName}">新手宝</div>
+                                <div class="deal-type" style="width:120px" th:if="${bidInfo.bidStatus==1}">
                                     <!-- 判断投资状态是否为1，即成功 -->
                                     投资成功
                                 </div>
-                                <div class="deal-money">100.0</div>
-                            </dd>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
+                                <div class="deal-type" style="width:120px" th:if="${bidInfo.bidStatus!=1}">
                                     <!-- 判断投资状态是否为1，即成功 -->
-                                    投资成功
+                                    投资失败
                                 </div>
-                                <div class="deal-money">100.0</div>
-                            </dd>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
-                                    <!-- 判断投资状态是否为1，即成功 -->
-                                    投资成功
-                                </div>
-                                <div class="deal-money">100.0</div>
-                            </dd>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
-                                    <!-- 判断投资状态是否为1，即成功 -->
-                                    投资成功
-                                </div>
-                                <div class="deal-money">100.0</div>
-                            </dd>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
-                                    <!-- 判断投资状态是否为1，即成功 -->
-                                    投资成功
-                                </div>
-                                <div class="deal-money">100.0</div>
-                            </dd>
-                            <dd>
-                                <div class="deal-time">2016-01-03 12:23:32</div>
-                                <div class="deal-name">新手宝</div>
-                                <div class="deal-type" style="width:120px">
-                                    <!-- 判断投资状态是否为1，即成功 -->
-                                    投资成功
-                                </div>
-                                <div class="deal-money">100.0</div>
+                                <div class="deal-money" th:text="${bidInfo.bidMoney}">100.0</div>
                             </dd>
                             &nbsp;&nbsp;
 
                             <div class="touzi_fenye" style="width:100%;text-align:center;">
-                                共20条3页　当前为第 1 页
-                                <a id="linkHomePage" th:href="@{/loan/myInvest}">首页</a>
-                                <a id="linkPreviousPage"
-                                   th:href="@{/loan/myInvest}">上一页</a>
-                                <a id="linkNextPage"
-                                   th:href="@{/loan/myInvest}">下一页 </a>
-                                <a id="linkLastPage"
-                                   th:href="@{/loan/myInvest}">尾页</a>
+                                <a th:text="|共${pageModel.totalCount}条${pageModel.totalPage}页 当前为第${pageModel.cunPage}页|">共20条3页　当前为第 1 页</a>
+                                <a id="linkHomePage" th:href="@{/loan/myInvest(cunPage=1)}">首页</a>
+                                <a th:if="${pageModel.cunPage<=1}">
+                                <a id="linkPreviousPage" href="#">上一页</a>
+                                </a>
+                                <a th:if="${pageModel.cunPage>1}">
+                                    <a id="linkPreviousPage" th:href="@{/loan/myInvest(cunPage=${pageModel.cunPage-1})}">上一页</a>
+                                </a>
+                                <a th:if="${pageModel.cunPage>=pageModel.totalPage}">
+                                <a id="linkNextPage" href="#">下一页 </a>
+                                </a>
+                                <a th:if="${pageModel.cunPage<pageModel.totalPage}">
+                                    <a id="linkNextPage" th:href="@{/loan/myInvest(cunPage=${pageModel.cunPage}+1)}">下一页 </a>
+                                </a>
+                                <a id="linkLastPage" th:href="@{/loan/myInvest(cunPage=${pageModel.totalPage})}">尾页</a>
                             </div>
 
                         </dl>

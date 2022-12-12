@@ -2,6 +2,8 @@ package com.bjpn.money.service;
 
 import com.bjpn.money.model.RechargeRecord;
 
+import java.util.List;
+
 /**
  * 充值接口
  */
@@ -25,4 +27,24 @@ public interface RechargeRecordService {
      * @return
      */
     RechargeRecord queryRechargeByNo(String out_trade_no);
+
+    /**
+     * 根据用户id查询充值记录表
+     * @param uid
+     * @return
+     */
+    List<RechargeRecord> queryRechargeRecordByUid(Integer uid);
+
+    /**
+     * 支付交易成功
+     * @param rechargeRecord
+     * @return
+     */
+    int rechargeSuccess(RechargeRecord rechargeRecord);
+
+    /**
+     * 查询充值订单状态为0的订单
+     * @return
+     */
+    List<RechargeRecord> queryRechargeRecordsByZero();
 }

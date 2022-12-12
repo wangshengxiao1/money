@@ -2,9 +2,13 @@ package com.bjpn.money.web;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.bjpn.money.model.BidInfo;
+import com.bjpn.money.model.IncomeRecord;
 import com.bjpn.money.model.LoanInfo;
+import com.bjpn.money.model.RankTopVo;
 import com.bjpn.money.service.BidInfoService;
+import com.bjpn.money.service.IncomeRecordService;
 import com.bjpn.money.service.LoanInfoService;
+import com.bjpn.money.service.RedisService;
 import com.bjpn.money.util.PageModel;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,12 @@ public class LoanController {
 
     @Reference(interfaceClass = BidInfoService.class, timeout = 20000, version = "1.0.0")
     BidInfoService bidInfoService;
+
+    @Reference(interfaceClass = IncomeRecordService.class, timeout = 20000, version = "1.0.0")
+    IncomeRecordService incomeRecordService;
+
+    @Reference(interfaceClass = RedisService.class ,timeout = 20000,version = "1.0.0")
+    RedisService redisService;
 
     //同一类型产品分页展示
     @GetMapping("loan/loan")
@@ -79,9 +89,16 @@ public class LoanController {
         model.addAttribute("loanInfosByTypeAndModel", loanInfosByTypeAndModel);
 
 
-        //todo:投资排行榜
-        return "loan";
+        //投资排行榜,降序查询投资记录表
+        //List<IncomeRecord> incomeRecordList = incomeRecordService.queryByMoney();
+        //model.addAttribute("incomeRecordList",incomeRecordList);
 
+
+        //新的投资排行榜，从Redis中取出数据
+        List<RankTopVo> rankTopVos = redisService.zpop();
+        model.addAttribute("rankTopVos",rankTopVos);
+
+        return "loan";
     }
 
     //根据产品id查询产品，详情页展示

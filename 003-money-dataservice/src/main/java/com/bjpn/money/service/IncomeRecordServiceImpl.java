@@ -124,4 +124,24 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         }
 
     }
+
+    /**
+     * //根据用户id查询投资记录收益表，按时间降序
+     * @param uid
+     * @return
+     */
+    @Override
+    public List<IncomeRecord> queryIncomeRecordByUid(Integer uid) {
+        return incomeRecordMapper.selectIncomeRecordByUid(uid);
+    }
+
+    /**
+     * 按投资金额降序的方式查询投资记录
+     * @return
+     */
+    @Override
+    public List<IncomeRecord> queryByMoney() {
+        return incomeRecordMapper.selectByMoney();
+    }
+
 }

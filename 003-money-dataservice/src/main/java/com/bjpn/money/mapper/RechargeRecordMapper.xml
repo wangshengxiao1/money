@@ -120,8 +120,23 @@
     update b_recharge_record set recharge_status = 2 where recharge_no = #{tradeNo}
   </update>
 
+  <!--充值成功将订单状态改为1-->
+  <update id="updateStatusByRechargeRecord" parameterType="com.bjpn.money.model.RechargeRecord">
+    update b_recharge_record set recharge_status = 1 where id = #{id}
+  </update>
+
   <!--根据订单号查询订单是否存在-->
   <select id="selectRechargeByNo" resultMap="BaseResultMap">
     select * from b_recharge_record where recharge_no = #{tradeNo}
+  </select>
+
+  <!--根据用户ID查询充值订单，按用户充值的时间降序-->
+  <select id="selectRechargeRecordByUid" resultMap="BaseResultMap">
+    select * from b_recharge_record where uid = #{uid} order by recharge_time desc
+  </select>
+
+  <!--查询充值订单状态为0的订单-->
+  <select id="selectRechargeRecordsByZero" resultMap="BaseResultMap">
+    select * from b_recharge_record where recharge_status = 0
   </select>
 </mapper>

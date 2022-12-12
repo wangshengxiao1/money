@@ -110,7 +110,7 @@
   </select>
 
   <!--关联查询，创建新的映射，添加user对象所需要的参数-->
-  <resultMap id="NewResultMap" type="com.bjpn.money.model.BidInfo">
+  <resultMap id="OneResultMap" type="com.bjpn.money.model.BidInfo">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="loan_id" jdbcType="INTEGER" property="loanId" />
     <result column="uid" jdbcType="INTEGER" property="uid" />
@@ -126,7 +126,7 @@
   </resultMap>
 
   <!--关联查询该产品的投资记录，带电话号码-->
-  <select id="selectBidInfosByLoanId"  resultMap="NewResultMap">
+  <select id="selectBidInfosByLoanId"  resultMap="OneResultMap">
     select * from b_bid_info,u_user where b_bid_info.loan_id = #{loanId} and b_bid_info.uid = u_user.id limit #{start},#{content}
   </select>
 
@@ -136,4 +136,34 @@
   </select>
 
 
+
+  <resultMap id="TwoResultMap" type="com.bjpn.money.model.BidInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="loan_id" jdbcType="INTEGER" property="loanId" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="bid_money" jdbcType="DOUBLE" property="bidMoney" />
+    <result column="bid_time" jdbcType="TIMESTAMP" property="bidTime" />
+    <result column="bid_status" jdbcType="INTEGER" property="bidStatus" />
+
+    <!--复杂对象映射-->
+    <association property="loanInfo" javaType="com.bjpn.money.model.LoanInfo">
+      <id property="id" column="id"/>
+      <result property="productName" column="product_name"/>
+    </association>
+  </resultMap>
+
+  <!--根据用户ID查询投资信息按时间降序-->
+  <select id="selectBidInfoByUid" resultMap="TwoResultMap">
+    select * from b_bid_info,b_loan_info where b_bid_info.uid = #{uid} and b_bid_info.loan_id = b_loan_info.id order by bid_time desc
+  </select>
+
+  <!--查询投资记录总条数,带产品名称-->
+  <select id="selectCountBidInfoByUid" resultType="java.lang.Long">
+    select count(1) from b_bid_info,b_loan_info where b_bid_info.uid = #{uid} and b_bid_info.loan_id = b_loan_info.id
+  </select>
+
+  <!--分页查询投资记录-->
+  <select id="selectBidInfoByUidAndPage" resultMap="TwoResultMap">
+    select * from b_bid_info,b_loan_info where b_bid_info.uid = #{uid} and b_bid_info.loan_id = b_loan_info.id limit #{start},#{content}
+  </select>
 </mapper>

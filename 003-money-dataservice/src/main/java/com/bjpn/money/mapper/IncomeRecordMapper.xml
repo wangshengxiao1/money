@@ -131,4 +131,48 @@
     select * from b_income_record where income_status = 0 and DATE_FORMAT(now(), '%Y-%m-%d') >= income_date
   </select>
 
+
+  <!--复杂对象映射-->
+  <resultMap id="OneResultMap" type="com.bjpn.money.model.IncomeRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="loan_id" jdbcType="INTEGER" property="loanId" />
+    <result column="bid_id" jdbcType="INTEGER" property="bidId" />
+    <result column="bid_money" jdbcType="DOUBLE" property="bidMoney" />
+    <result column="income_date" jdbcType="DATE" property="incomeDate" />
+    <result column="income_money" jdbcType="DOUBLE" property="incomeMoney" />
+    <result column="income_status" jdbcType="INTEGER" property="incomeStatus" />
+
+    <association property="loanInfo" javaType="com.bjpn.money.model.LoanInfo">
+      <id property="id" column="id"/>
+      <result property="productName" column="product_name"/>
+    </association>
+  </resultMap>
+  <!--根据用户ID查询投资收益记录表，按时间降序-->
+  <select id="selectIncomeRecordByUid" parameterType="java.lang.Integer" resultMap="OneResultMap">
+    select * from b_income_record,b_loan_info where b_income_record.uid = #{uid} and b_income_record.loan_id = b_loan_info.id order by income_date desc
+  </select>
+
+  <!--复杂对象映射-->
+  <resultMap id="NewResultMap" type="com.bjpn.money.model.IncomeRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="loan_id" jdbcType="INTEGER" property="loanId" />
+    <result column="bid_id" jdbcType="INTEGER" property="bidId" />
+    <result column="bid_money" jdbcType="DOUBLE" property="bidMoney" />
+    <result column="income_date" jdbcType="DATE" property="incomeDate" />
+    <result column="income_money" jdbcType="DOUBLE" property="incomeMoney" />
+    <result column="income_status" jdbcType="INTEGER" property="incomeStatus" />
+
+    <association property="user" javaType="com.bjpn.money.model.User">
+      <id property="id" column="id"/>
+      <result property="phone" column="phone"/>
+    </association>
+  </resultMap>
+
+  <!--根据投资金额排序查询投资收益记录-->
+  <select id="selectByMoney" resultMap="NewResultMap">
+    select * from b_income_record,u_user where b_income_record.uid = u_user.id order by bid_money desc
+  </select>
+
 </mapper>

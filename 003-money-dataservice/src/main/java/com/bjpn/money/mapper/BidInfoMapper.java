@@ -1,6 +1,7 @@
 package com.bjpn.money.mapper;
 
 import com.bjpn.money.model.BidInfo;
+import com.bjpn.money.util.PageModel;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +30,13 @@ public interface BidInfoMapper {
 
     //通过产品id查询产品投资记录，不带分页
     List<BidInfo> selectBidInfoListByLoanId(Integer id);
+
+    //通过用户ID查询产品投资记录
+    List<BidInfo> selectBidInfoByUid(Integer uid);
+
+    //查询投资记录总条数
+    Long selectCountBidInfoByUid(Integer uid);
+
+    //分页查询投资记录
+    List<BidInfo> selectBidInfoByUidAndPage(Map map);
 }

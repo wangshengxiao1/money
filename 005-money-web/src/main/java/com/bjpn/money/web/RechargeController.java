@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -212,11 +213,17 @@ public class RechargeController {
 
 
                 }
-                //交易支付成功，修改支付状态为1，往账户余额中添加充值金额
+                //交易支付成功，修改支付状态为1，往账户余额中添加充值金额，添加事务两者同时操作
+                int num = rechargeRecordService.rechargeSuccess(rechargeRecord);
+                if (num!=1){
+                    //发短信：30分钟到账
+
+                }
+
                 //若订单号存在，根据订单号查询用户的uid，根据用户uid往用户账户中添加
-                Integer uid = rechargeRecord.getUid();
-                double money = Double.parseDouble(total_amount);
-                int num = financeAccountService.insertMoney(uid,money);
+                //Integer uid = rechargeRecord.getUid();
+                //double money = Double.parseDouble(total_amount);
+                //num = financeAccountService.insertMoney(uid,money);
 
 
 
@@ -230,7 +237,7 @@ public class RechargeController {
 
 
 
-        return null;
+        return "redirect:/loan/page/myCenter";
     }
 
 
@@ -239,6 +246,48 @@ public class RechargeController {
     public String wxPay(Double rechargeMoney){
         System.out.println("----wxPay-----"+rechargeMoney);
         return "";
+    }
+
+    //支付宝退款流程
+    @GetMapping("/loan/page/aliRefund")
+    public String aliRefund(){
+        //跳转到自己设置的页面，将参数放入form表单中
+        return "toRefund";
+    }
+
+    //支付宝退款查询
+    @GetMapping("/loan/page/refundBack")
+    public String refundBack(@RequestParam(name = "out_trade_no",required = true) String out_trade_no,
+                             @RequestParam(name = "out_request_no",required = true) String out_request_no,
+                             @RequestParam(name = "refund_amount") String refund_amount){
+        //么有returnurl返回，直接查询接口
+        String result = "{\n" +
+                "\t\"alipay_trade_fastpay_refund_query_response\":{\n" +
+                "\t\t\"code\":\"40004\",\n" +
+                "\t\t\"msg\":\"Business Failed\",\n" +
+                "\t\t\"sub_code\":\"ACQ.INVALID_PARAMETER\",\n" +
+                "\t\t\"sub_msg\":\"参数无效：退款请求号不能为空\"\n" +
+                "\t},\n" +
+                "\t\"sign\":\"MjZvtXNOpkUTZXY7Ye9VT2BB8jk+5eucwSX8VFx91qeBZWp6PXpB03zJ0VkAJPXI/u1HqXbtwGD7cxUuAN0Ty//nX6dn+fqLXupSQDR6d6TlVi/mvdQRKdEiWHQoxN9d+AOFE4v1C7D5GaPim9y75K2e8OP7TjSB0FwWPNWN3k9eY5aWrw3ASFCLAo8xK4g1tApWph2ffiqBcuSEC9CGhLbhLtG8+IwoSOQ8EG5E6Q+LNwEPqL73s7m1Dkq2PTo5S+4weSIzju3QpTls4mD/uxEz0kwEZeN0PGIVY0wXP46vKZLi8wwJfgLQrgPXXJxy1UVucP6n8/ecUlSKNXyUjw==\"\n" +
+                "}";
+        try {
+            result = HttpClientUtils.doGet("http://localhost:9007/007-money-alipay/loan/page/queryRefund?out_trade_no=" + out_trade_no + "&out_request_no=" + out_request_no);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //解析result
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        JSONObject aliRefund = jsonObject.getJSONObject("alipay_trade_fastpay_refund_query_response");
+        String code = aliRefund.getString("code");
+        if (!StringUtils.equals("10000",code)){
+            //发短信，服务不可用或权限不足或参数错误，请重新发起
+        }
+        //通过退款成功将减少根据订单号查询的用户余额
+        RechargeRecord rechargeRecord = rechargeRecordService.queryRechargeByNo(out_trade_no);
+        Integer uid = rechargeRecord.getUid();
+        //根据用户id减少账户余额
+        int i = financeAccountService.insertMoney(uid, Double.parseDouble(refund_amount));
+        return  "redirect:/loan/page/myCenter";
     }
 
 }

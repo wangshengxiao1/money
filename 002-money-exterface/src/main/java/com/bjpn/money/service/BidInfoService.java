@@ -29,4 +29,26 @@ public interface BidInfoService {
      * @return
      */
     String invest(Map<String, Object> parasMap);
+
+    /**
+     * 根据用户ID内联查询投资信息
+     * @param uid
+     * @return
+     */
+    List<BidInfo> queryBidInfoByUid(Integer uid);
+
+    /**
+     * 查询投资总条数
+     * @param uid
+     * @return
+     */
+    Long queryCountBidInfoByUid(Integer uid);
+
+    /**
+     * 分页查询投资记录
+     * @param uid
+     * @param pageModel
+     * @return
+     */
+    List<BidInfo> queryBidInfoByUidAndPage(Integer uid, PageModel pageModel);
 }

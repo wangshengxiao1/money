@@ -2,13 +2,11 @@ package com.bjpn.money.web;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
-import com.bjpn.money.model.FinanceAccount;
-import com.bjpn.money.model.IncomeRecord;
-import com.bjpn.money.model.RechargeRecord;
-import com.bjpn.money.model.User;
+import com.bjpn.money.model.*;
 import com.bjpn.money.service.*;
 import com.bjpn.money.util.Constant;
 import com.bjpn.money.util.HttpClientUtils;
+import com.bjpn.money.util.PageModel;
 import com.bjpn.money.util.Result;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +44,9 @@ public class UserController {
 
     @Reference(interfaceClass = RechargeRecordService.class, timeout = 20000, version = "1.0.0")
     RechargeRecordService rechargeRecordService;
+
+    @Reference(interfaceClass = BidInfoService.class, timeout = 20000, version = "1.0.0")
+    BidInfoService bidInfoService;
 
     //跳转注册页面
     @GetMapping("/loan/page/register")
@@ -264,15 +265,22 @@ public class UserController {
 
     //进入我的小金库
     @GetMapping("/loan/page/myCenter")
-    public String  myCenter(HttpServletRequest request){
+    public String  myCenter(HttpServletRequest request,Model model){
         //进入之前查询最近投资，最近充值，最近收益
         //根据登录信息查询投资记录表收益记录表，充值记录表
         User user = (User)request.getSession().getAttribute(Constant.LOGIN_USER);
         Integer uid = user.getId();
-        //查询投资记录收益表
-        List<IncomeRecord> incomeRecords = incomeRecordService.queryIncomeRecordByUid(uid);
-        //查询充值记录表
+        //根据用户ID内联查询投资记录表
+        List<BidInfo> bidInfoList = bidInfoService.queryBidInfoByUid(uid);
+        //根据用户id查询充值记录表,按充值时间降序
         List<RechargeRecord> rechargeRecords = rechargeRecordService.queryRechargeRecordByUid(uid);
+        //根据用户id查询收益表
+        List<IncomeRecord> incomeRecords = incomeRecordService.queryIncomeRecordByUid(uid);
+        //将查询到的信息放入model中
+        model.addAttribute("bidInfoList",bidInfoList);
+        model.addAttribute("rechargeRecords",rechargeRecords);
+        model.addAttribute("incomeRecords",incomeRecords);
+
         return "myCenter";
     }
 
@@ -323,4 +331,50 @@ public class UserController {
 
         return Result.success();
     }
+
+    //查看全部投资
+    @GetMapping("/loan/myInvest")
+    public String myInvest(@RequestParam(name = "cunPage" ,defaultValue = "1") Long cunPage,Model model,HttpServletRequest request){
+        //获取用户id，能进小金库肯定登录
+        User user = (User)request.getSession().getAttribute(Constant.LOGIN_USER);
+        Integer uid = user.getId();
+        //创建分页模型
+        PageModel pageModel = new PageModel(6);
+        //计算总条数
+        Long num = bidInfoService.queryCountBidInfoByUid(uid);
+        pageModel.setTotalCount(num);
+        //通过总条数计算总页数
+        if (num%pageModel.getPageSize()==0){
+            pageModel.setTotalPage(num/pageModel.getPageSize());
+        }else {
+            pageModel.setTotalPage(num/pageModel.getPageSize() + 1);
+        }
+        //设置当前页
+        pageModel.setCunPage(cunPage);
+
+
+        //查询所有投资记录
+        List<BidInfo> bidInfoList = bidInfoService.queryBidInfoByUidAndPage(uid,pageModel);
+
+        //返回分页模型和投资记录
+        model.addAttribute("bidInfoList",bidInfoList);
+        model.addAttribute("pageModel",pageModel);
+        return "myInvest";
+    }
+
+    //查看全部充值
+    @GetMapping("/loan/myRecharge")
+    public String myRecharge(){
+
+        return "myRecharge";
+    }
+
+    //查看全部收益计划
+    @GetMapping("/loan/myIncome")
+    public String myIncome(){
+
+
+        return "myIncome";
+    }
+
 }

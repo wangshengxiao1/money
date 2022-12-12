@@ -1,5 +1,9 @@
 package com.bjpn.money.service;
 
+import com.bjpn.money.model.RankTopVo;
+
+import java.util.List;
+
 /**
  * 验证码缓存
  */
@@ -17,4 +21,10 @@ public interface RedisService {
      * @return
      */
     String pop(String phone);
+
+    /**
+     * 根据向Redis中存入的数据进行投资排行
+     * @return
+     */
+    List<RankTopVo> zpop();
 }

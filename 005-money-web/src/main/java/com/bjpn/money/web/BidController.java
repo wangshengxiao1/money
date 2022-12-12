@@ -91,12 +91,15 @@ public class BidController {
         parasMap.put("loanId",loanId);
         parasMap.put("bidMoney",bidMoney);
         parasMap.put("userId",user.getId());
+        parasMap.put("user",user);
 
         //调用投资方法
         String result=bidInfoService.invest(parasMap);
         if(!StringUtils.equals("ok",result)){
             return Result.error(result);
         }
+
+
 
         return Result.success();
     }

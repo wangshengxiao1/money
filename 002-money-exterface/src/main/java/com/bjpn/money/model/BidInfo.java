@@ -7,6 +7,16 @@ public class BidInfo implements Serializable {
     //接收映射文件传参
     private User user;
 
+    private LoanInfo loanInfo;
+
+    public LoanInfo getLoanInfo() {
+        return loanInfo;
+    }
+
+    public void setLoanInfo(LoanInfo loanInfo) {
+        this.loanInfo = loanInfo;
+    }
+
     public User getUser() {
         return user;
     }

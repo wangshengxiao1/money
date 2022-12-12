@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/003-money-dataservice" />
+    <file type="web" url="file://$PROJECT_DIR$/005-money-web" />
     <file type="web" url="file://$PROJECT_DIR$/100-alipay-sdk" />
   </component>
   <component name="MavenProjectsManager">
@@ -12,8 +14,8 @@
         <option value="$PROJECT_DIR$/004-money-common/pom.xml" />
         <option value="$PROJECT_DIR$/005-money-web/pom.xml" />
         <option value="$PROJECT_DIR$/006-money-timer/pom.xml" />
-        <option value="$PROJECT_DIR$/100-alipay-sdk/pom.xml" />
         <option value="$PROJECT_DIR$/007-money-alipay/pom.xml" />
+        <option value="$PROJECT_DIR$/100-alipay-sdk/pom.xml" />
       </list>
     </option>
   </component>
@@ -74,7 +76,7 @@
       </profile-state>
     </entry>
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectRootManager" version="2" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

@@ -228,7 +228,7 @@
 
   <!--根据投资金额减少剩余可投金额-->
   <update id="updateLeftMoneyReduceForInvest">
-    update b_loan_info set left_product_money=left_product_money-#{bidMoney} where id=#{loanId} and left_product_money-#{bidMoney}>=0 and version=#{version}
+    update b_loan_info set left_product_money=left_product_money-#{bidMoney},version = version + 1 where id=#{loanId} and left_product_money-#{bidMoney}>=0 and version=#{version}
   </update>
 
   <!--查询状态为1的产品-->

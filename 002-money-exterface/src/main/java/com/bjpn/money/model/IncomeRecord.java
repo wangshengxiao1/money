@@ -4,6 +4,20 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class IncomeRecord implements Serializable {
+
+    //添加user
+    private User user;
+
+    private LoanInfo loanInfo;
+
+    public LoanInfo getLoanInfo() {
+        return loanInfo;
+    }
+
+    public void setLoanInfo(LoanInfo loanInfo) {
+        this.loanInfo = loanInfo;
+    }
+
     private Integer id;
 
     private Integer uid;
@@ -19,6 +33,14 @@ public class IncomeRecord implements Serializable {
     private Double incomeMoney;
 
     private Integer incomeStatus;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Integer getId() {
         return id;

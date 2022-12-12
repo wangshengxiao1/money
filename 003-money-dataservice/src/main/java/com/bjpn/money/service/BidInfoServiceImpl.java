@@ -6,6 +6,7 @@ import com.bjpn.money.mapper.FinanceAccountMapper;
 import com.bjpn.money.mapper.LoanInfoMapper;
 import com.bjpn.money.model.BidInfo;
 import com.bjpn.money.model.LoanInfo;
+import com.bjpn.money.model.User;
 import com.bjpn.money.util.Constant;
 import com.bjpn.money.util.PageModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -186,7 +188,52 @@ public class BidInfoServiceImpl implements BidInfoService {
             return "投资记录添加失败";
         }
 
+        //投资成功向缓存中添加值,作为之后排行版用
+        User user = (User)parasMap.get("user");
+        String phone = user.getPhone();
+        Double bidMoney = (Double)parasMap.get("bidMoney");
+        redisTemplate.opsForZSet().incrementScore("userMoney",phone,bidMoney);
         return "ok";
 
+    }
+
+    /**
+     * 根据用户ID内联查询投资信息
+     * @param uid
+     * @return
+     */
+    @Override
+    public List<BidInfo> queryBidInfoByUid(Integer uid) {
+
+        return bidInfoMapper.selectBidInfoByUid(uid);
+    }
+
+
+    /**
+     * 查询投资总条数
+     * @param uid
+     * @return
+     */
+    @Override
+    public Long queryCountBidInfoByUid(Integer uid) {
+
+        return bidInfoMapper.selectCountBidInfoByUid(uid);
+    }
+
+
+    /**
+     * 分页查询投资记录
+     * @param uid
+     * @param pageModel
+     * @return
+     */
+    @Override
+    public List<BidInfo> queryBidInfoByUidAndPage(Integer uid, PageModel pageModel) {
+        //多参传递用集合
+        Map<String, Object> map = new HashMap<>();
+        map.put("uid", uid);
+        map.put("start", (pageModel.getCunPage()-1)*pageModel.getPageSize());
+        map.put("content", pageModel.getPageSize());
+        return bidInfoMapper.selectBidInfoByUidAndPage(map);
     }
 }
